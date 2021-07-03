@@ -18,22 +18,6 @@ milk = config.resources[MILK]       # ml
 coffee = config.resources[COFFEE]   # g
 money = 0.0                         # $
 
-# Cost of Coffee
-COST_OF_ESPRESSO = config.MENU[ESPRESSO][COST]
-COST_OF_LATTE = config.MENU[LATTE][COST]
-COST_OF_CAPUCCINO = config.MENU[CAPPUCCINO][COST]
-
-# Resource quantity required for different types of coffee
-WATER_FOR_ESPRESSO = config.MENU[ESPRESSO][INGREDIENTS][WATER]
-COFFEE_FOR_ESPRESSO = config.MENU[ESPRESSO][INGREDIENTS][COFFEE]
-WATER_FOR_LATTE = config.MENU[LATTE][INGREDIENTS][WATER]
-COFFEE_FOR_LATTE = config.MENU[LATTE][INGREDIENTS][COFFEE]
-MILK_FOR_LATTE = config.MENU[LATTE][INGREDIENTS][MILK]
-WATER_FOR_CAPUCCINO = config.MENU[CAPPUCCINO][INGREDIENTS][WATER]
-COFFEE_FOR_CAPUCCINO = config.MENU[CAPPUCCINO][INGREDIENTS][COFFEE]
-MILK_FOR_CAPUCCINO = config.MENU[CAPPUCCINO][INGREDIENTS][MILK]
-
-
 def get_resources():
     print(f"Water: {water}\nMilk:  {milk}\nCoffee:{coffee}\nMoney: ${money}")
 
@@ -44,36 +28,13 @@ def select_from_menu():
 
 
 def is_resources_sufficient(coffee_type):
-    is_sufficient = False
-    water_insufficient_message = "Sorry there is not enough water."
-    coffee_insufficient_message = "Sorry there is not enough coffee."
-    milk_insufficient_message = "Sorry there is not enough milk."
-    if coffee_type == ESPRESSO:
-        if water < 50:
-            print(water_insufficient_message)
-        elif coffee < 18:
-            print(coffee_insufficient_message)
-        else:
-            is_sufficient = True
-    elif coffee_type == LATTE:
-        if water < 200:
-            print(water_insufficient_message)
-        elif coffee < 24:
-            print(coffee_insufficient_message)
-        elif milk < 150:
-            print(milk_insufficient_message)
-        else:
-            is_sufficient = True
-    else:
-        if water < 250:
-            print(water_insufficient_message)
-        elif coffee < 24:
-            print(coffee_insufficient_message)
-        elif milk < 100:
-            print(milk_insufficient_message)
-        else:
-            is_sufficient = True
-    return is_sufficient
+    selected_coffee_ingredients = config.MENU[coffee_type][INGREDIENTS]
+    resources = config.resources
+    for ingredient in selected_coffee_ingredients:
+        if selected_coffee_ingredients[ingredient] >= resources[ingredient]:
+            print(f"Sorry there is not enough {ingredient}.")
+            return False
+    return True
 
 
 def ask_money():
@@ -89,41 +50,28 @@ def ask_money():
 
 
 def is_money_sufficient(coffee_type, money_received):
-    is_sufficient = False
+    coffee_types = config.MENU
     money_insufficient_message = "Sorry, that's not enough money. Money Refunded."
-    if coffee_type == ESPRESSO:
-        if money_received < COST_OF_ESPRESSO:
-            print(money_insufficient_message)
-        else:
-            is_sufficient = True
-    elif coffee_type == LATTE:
-        if money_received < COST_OF_LATTE:
-            print(money_insufficient_message)
-        else:
-            is_sufficient = True
-    else:
-        if money_received < COST_OF_CAPUCCINO:
-            print(money_insufficient_message)
-        else:
-            is_sufficient = True
-    return is_sufficient
+    for coffee in coffee_types:
+        if coffee_type == coffee:
+            if money_received < coffee_types[coffee][COST]:
+                print(money_insufficient_message)
+                return False
+            else:
+                return True
 
 
 def prepare_change(coffee_type, money_received):
     global money
     customer_paid = float(money_received)
-    if coffee_type == ESPRESSO:
-        customer_change = round(customer_paid - COST_OF_ESPRESSO, 2)
-        money += COST_OF_ESPRESSO
-        print(f"Here is ${customer_change} in change.")
-    elif coffee_type == LATTE:
-        customer_change = round(customer_paid - COST_OF_LATTE, 2)
-        money += COST_OF_LATTE
-        print(f"Here is ${customer_change} in change.")
-    else:
-        customer_change = round(customer_paid - COST_OF_CAPUCCINO, 2)
-        money += COST_OF_CAPUCCINO
-        print(f"Here is ${customer_change} in change.")
+    coffee_types = config.MENU
+
+    for coffee in coffee_types:
+        if coffee_type == coffee:
+            cost_of_coffee = coffee_types[coffee][COST]
+            customer_change = round(customer_paid - cost_of_coffee, 2)
+            money += cost_of_coffee
+            print(f"Here is ${customer_change} in change.")
 
 
 def use_resources(water_quantity, coffee_quantity, milk_quantity):
@@ -136,14 +84,20 @@ def use_resources(water_quantity, coffee_quantity, milk_quantity):
 
 
 def prepare_coffee(coffee_type):
+    coffee_types = config.MENU
     if coffee_type == ESPRESSO:
-        use_resources(WATER_FOR_ESPRESSO, COFFEE_FOR_ESPRESSO, 0)
-        print(f"Here is your {coffee_type} ☕. Enjoy")
-    elif coffee_type == LATTE:
-        use_resources(WATER_FOR_LATTE, COFFEE_FOR_LATTE, MILK_FOR_LATTE)
+        use_resources(
+            coffee_types[coffee_type][INGREDIENTS][WATER],
+            coffee_types[coffee_type][INGREDIENTS][COFFEE],
+            0
+        )
         print(f"Here is your {coffee_type} ☕. Enjoy")
     else:
-        use_resources(WATER_FOR_CAPUCCINO, COFFEE_FOR_CAPUCCINO, MILK_FOR_CAPUCCINO)
+        use_resources(
+            coffee_types[coffee_type][INGREDIENTS][WATER],
+            coffee_types[coffee_type][INGREDIENTS][COFFEE],
+            coffee_types[coffee_type][INGREDIENTS][MILK]
+        )
         print(f"Here is your {coffee_type} ☕. Enjoy")
 
 
