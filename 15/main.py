@@ -2,6 +2,7 @@ import config
 
 # Variable Constants
 REPORT = "report"
+SWITCH_OFF = "off"
 ESPRESSO = "espresso"
 LATTE = "latte"
 CAPPUCCINO = "cappuccino"
@@ -155,10 +156,12 @@ def order_coffee(coffee_type):
             prepare_change(coffee_type, money_received)
             prepare_coffee(coffee_type)
 
-
-while True:
+is_on = True
+while is_on:
     item = select_from_menu()
     if item == REPORT:
         get_resources()
+    elif item == SWITCH_OFF:
+        is_on = False
     else:
         order_coffee(item)
