@@ -18,6 +18,7 @@ milk = config.resources[MILK]       # ml
 coffee = config.resources[COFFEE]   # g
 money = 0.0                         # $
 
+
 def get_resources():
     print(f"Water: {water}\nMilk:  {milk}\nCoffee:{coffee}\nMoney: ${money}")
 
@@ -109,6 +110,7 @@ def order_coffee(coffee_type):
         if is_money_enough:
             prepare_change(coffee_type, money_received)
             prepare_coffee(coffee_type)
+
 
 is_on = True
 while is_on:
